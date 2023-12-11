@@ -1,6 +1,8 @@
 const express = require('express')
 // import express from 'express'
 
+const db = require('./db.js')
+
 const port = 5000
 
 const app = express()
