@@ -18,6 +18,15 @@ app.post('/', (req, res) => {
     console.log(req.body)
     res.status(200).json('hello word')
 })
-app.listen(port, () => {
-    console.log('server loading http://localhost:5000')
-})
+
+async function startApp() {
+    try {
+        app.listen(port, () => {
+            console.log('server loading http://localhost:5000')
+        })
+    } catch (error) {
+        console/log(error)
+    }
+}
+
+startApp()
