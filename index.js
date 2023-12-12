@@ -14,8 +14,9 @@ app.get('/', (req, res) => {
     res.status(200).json('hello word')
 })
 
-app.post('/', (req, res) => {
-    console.log(req.body)
+app.post('/', async (req, res) => {
+    const {author, title, content, picture} = req.body
+    const post = await db.create({author, title, content, picture})
     res.status(200).json('hello word')
 })
 
@@ -25,7 +26,7 @@ async function startApp() {
             console.log('server loading http://localhost:5000')
         })
     } catch (error) {
-        console/log(error)
+        console.log(error)
     }
 }
 
