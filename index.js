@@ -1,7 +1,8 @@
 const express = require('express')
-// import express from 'express'
 
 const db = require('./db.js')
+
+const Article = require('./db.js').Article
 
 const port = 5000
 
@@ -14,10 +15,18 @@ app.get('/', (req, res) => {
     res.status(200).json('hello word')
 })
 
-app.post('/', async (req, res) => {
-    const {author, title, content, picture} = req.body
-    const post = await db.create({author, title, content, picture})
-    res.status(200).json('hello word')
+app.post('/articles', async (req, res, next) => {
+    const url = req.body.url
+    read(url, (err, result) => {
+        if (err || !result) res.status(500).send('Error dowlondeing article')
+        Article.create(
+            {author: result.author, title: result.title, content: result.content, picture: result.picture},
+            (err, article) => {
+                if (err) return next(err)
+                res.send('ok')
+            }
+        )
+    })
 })
 
 async function startApp() {
