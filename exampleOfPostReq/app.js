@@ -5,8 +5,6 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const res = require('express/lib/response')
 const app = express()
-
-
 const sqlite = require('sqlite3').verbose()
 const db = new sqlite.Database('./quote.db', sqlite.OPEN_READWRITE, (err) => {
     if (err) return console.error(err)
@@ -14,7 +12,7 @@ const db = new sqlite.Database('./quote.db', sqlite.OPEN_READWRITE, (err) => {
 
 app.use(bodyParser.json())
 
-app.post('./quote.db', (req, res)  => {
+app.post('/quote', (req, res)  => {
     try {
         console.log(req.body.movie)
         return res.json({
