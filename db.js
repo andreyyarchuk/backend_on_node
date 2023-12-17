@@ -1,5 +1,5 @@
 const sqlite3 = require('sqlite3').verbose()
-const dbName = 'db.sqlite3'
+const dbName = 'later.sqlite'
 const db = new sqlite3.Database(dbName)
 
 db.serialize( ()=> {
@@ -19,17 +19,17 @@ class Article {
         db.all('SELECT * FROM articles', cb)
     }
 
-    static find(id, cb ) {
+    static find(id, cb) {
         db.get('SELECT * FROM articles id = ?', id, cb)
     }
 
     static create(data, cb) {
-        const sql = 'INSERT INTO article(author, title, content, picture) VALUES (?,?)'
+        const sql = 'INSERT INTO articles(author, title, content, picture) VALUES (?,?,?,?)'
         db.run(sql, data.author, data.title, data.content, data.picture, cb)
     }
 
     static delete(id, cb) {
-        if (!id) return cb( new Error('Please provide an id'))
+        if (!id) return cb(new Error('Please provide an id'))
         db.run('DELETE FROM articles WHERE id = ?', id, cb)
     }
 
@@ -37,4 +37,4 @@ class Article {
 }
 
 module.exports = db
-module.exports.Article
+module.exports.Article = Article

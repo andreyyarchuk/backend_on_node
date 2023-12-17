@@ -2,6 +2,10 @@ const express = require('express')
 
 const db = require('./db.js')
 
+const bodyParser =require('body-parser')
+
+const read = require('node-readability')
+
 const Article = require('./db.js').Article
 
 const port = 5000
@@ -10,12 +14,15 @@ const app = express()
 
 app.use(express.json())
 
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded( {extended: true}))
+
 app.get('/', (req, res) => {
     console.log(req.query)
     res.status(200).json('hello word')
 })
 
-app.post('/articles', async (req, res, next) => {
+app.post('/articles', (req, res, next) => {
     const url = req.body.url
     read(url, (err, result) => {
         if (err || !result) res.status(500).send('Error dowlondeing article')
