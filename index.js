@@ -17,23 +17,28 @@ app.use(express.json())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded( {extended: true}))
 
+const MSG = {
+    HELLO: "hello word",
+    BODY404: "Not found body",
+    OK: "ok"
+}
+
 app.get('/', (req, res) => {
     console.log(req.query)
     res.status(200).json('hello word')
 })
 
 app.post('/articles', (req, res, next) => {
-    const url = req.body.url
-    read(url, (err, result) => {
-        if (err || !result) res.status(500).send('Error dowlondeing article')
-        Article.create(
-            {author: result.author, title: result.title, content: result.content, picture: result.picture},
-            (err, article) => {
-                if (err) return next(err)
-                res.send('ok')
-            }
-        )
-    })
+    const result = req.body.result
+    const url = req.url
+    if (!req.body.result) return res.status(404).send(MSG.BODY404)
+    Article.create(
+        {author: result.author, title: result.title, content: result.content, picture: result.picture},
+        (err, article) => {
+            if (err) return next(err)
+            res.send(MSG.OK)
+        }
+    )
 })
 
 async function startApp() {
