@@ -28,10 +28,27 @@ app.get('/', (req, res) => {
     res.status(200).json('hello word')
 })
 
+// app.post('/articles', (req, res, next) => {
+//     const result = req.body.result
+//     // const url = req.url
+//     // console.log(result)
+//     console.log(req.body)
+//     if (!req.body.result) return res.status(404).send(MSG.BODY404)
+//     Article.create(
+//         {author: result.author, title: result.title, content: result.content, picture: result.picture},
+//         (err, article) => {
+//             if (err) return next(err)
+//             res.send(MSG.OK)
+//         }
+//     )
+// })
+
 app.post('/articles', (req, res, next) => {
-    const result = req.body.result
-    const url = req.url
-    if (!req.body.result) return res.status(404).send(MSG.BODY404)
+    const result = req.body
+    // const url = req.url
+    // console.log(result)
+    console.log(req.body)
+    if (!req.body) return res.status(404).send(MSG.BODY404)
     Article.create(
         {author: result.author, title: result.title, content: result.content, picture: result.picture},
         (err, article) => {
@@ -40,6 +57,7 @@ app.post('/articles', (req, res, next) => {
         }
     )
 })
+
 
 async function startApp() {
     try {
