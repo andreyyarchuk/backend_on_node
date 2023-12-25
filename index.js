@@ -1,10 +1,8 @@
 const express = require('express')
-
-const db = require('./db.js')
-
+const Article = require('./db.js').Article
 const bodyParser =require('body-parser')
 
-const Article = require('./db.js').Article
+const db = require('./db.js')
 
 const port = 5000
 
@@ -21,16 +19,16 @@ const MSG = {
     OK: "ok"
 }
 
-app.get('/', (req, res) => {
-    console.log(req.query)
-    res.status(200).json('hello word')
-})
+// app.get('/', (req, res) => {
+//     console.log(req.query)
+//     res.status(200).json('hello word')
+// })
 
 app.post('/articles', (req, res, next) => {
     const result = req.body
     const url = req.url
     console.log(result)
-    if (!req.body) return res.status(404).send(MSG.BODY404)
+    if (!req.body) return res.status(404).json(MSG.BODY404)
     Article.create(
         {author: result.author, title: result.title, content: result.content, picture: result.picture},
         (err, article) => {
@@ -38,6 +36,31 @@ app.post('/articles', (req, res, next) => {
             res.send(MSG.OK)
         }
     )
+})
+
+
+app.get('/articles', (req, res, next) => {
+    Article.all((err, articles) => {
+        if (err) return next(err)
+        res.send(articles)
+    })
+})
+
+
+app.get('/articles/:id', (req, res, next) => {
+    const id = req.params.id
+    Article.find(id, (err) => {
+        if (err) return next(err)
+        res.send(articles)
+    })
+})
+
+app.delete('/articles/:id', (req, res, next) => {
+    const id = req.params.id
+    Article.delete(id, (err) => {
+        if (err) return next(err)
+        res.send({message: 'Deleted'})
+    })
 })
 
 
