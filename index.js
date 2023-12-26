@@ -47,13 +47,33 @@ app.get('/articles', (req, res, next) => {
 })
 
 
-app.get('/articles/:id', (req, res, next) => {
-    const id = req.params.id
-    Article.find(id, (err) => {
-        if (err) return next(err)
-        res.send(articles)
-    })
+// app.get('/articles/:id', (req, res, next) => {
+//     const id = req.params.id
+//     Article.find(id, (err) => {
+//         if (err) return next(err)
+//         res.send(articles)
+//     })
+// })
+
+
+
+app.get("/articles/:id", (req, res, next) => {
+    var sql = "select * from articles where id = ?"
+    var params = [req.params.id]
+    db.get(sql, params, (err, row) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        res.json({
+            "message":"success",
+            "data":row
+        })
+      });
 })
+
+
+
 
 app.delete('/articles/:id', (req, res, next) => {
     const id = req.params.id
