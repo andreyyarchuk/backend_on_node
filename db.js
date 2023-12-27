@@ -14,19 +14,14 @@ db.serialize( ()=> {
     db.run(sql)
 })
 
-class Article {
+class Article {s
     static all(cb) {
         db.all('SELECT * FROM articles', cb)
     }
 
-    // static find(id, cb) {
-    //     db.get('SELECT * FROM articles id = ?', id, cb)
-    // }
-
-
-    // static find(id, cb) {
-    //     db.get('SELECT * FROM articles where id = ?', id, cb)
-    // }
+    static find(id, cb) {
+        db.get('SELECT * FROM articles WHERE id = ?', id, cb)
+    }
 
     static create(data, cb) {
         const sql = 'INSERT INTO articles(author, title, content, picture) VALUES (?,?,?,?)'
