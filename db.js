@@ -33,7 +33,6 @@ class Article {s
         db.run('DELETE FROM articles WHERE id = ?', id, cb)
     }
 
-
 }
 
 module.exports = db

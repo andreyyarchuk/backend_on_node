@@ -34,6 +34,33 @@ app.post('/articles', (req, res, next) => {
     )
 })
 
+app.put('/articles/:id', (req, res, next) => {
+    var data = {
+        author: req.body.author,
+        title: req.body.title,
+        content: req.body.content,
+        picture: req.body.picture
+    }
+    db.run(
+            `UPDATE articles set 
+            author = COALESCE(?,author), 
+            title = COALESCE(?,title), 
+            content = COALESCE(?,content)
+            picture =  COALESCE(?,picture)
+            WHERE id = ?`,
+        [data.author, data.title, data.content, data.picture, req.params.id],
+        function (err, result) {
+            if (err){
+                res.status(400).json({"error": res.message})
+                return;
+            }
+            res.json({
+                message: "success",
+                data: data,
+                changes: this.changes
+            })
+    });
+})
 
 app.get('/articles', (req, res, next) => {
     Article.all((err, articles) => {
@@ -59,6 +86,7 @@ app.delete('/articles/:id', (req, res, next) => {
         res.send({message: 'Deleted'})
     })
 })
+
 
 
 async function startApp() {
