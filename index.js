@@ -45,13 +45,13 @@ app.put('/articles/:id', (req, res, next) => {
             `UPDATE articles set 
             author = COALESCE(?,author), 
             title = COALESCE(?,title), 
-            content = COALESCE(?,content)
+            content = COALESCE(?,content),
             picture =  COALESCE(?,picture)
             WHERE id = ?`,
         [data.author, data.title, data.content, data.picture, req.params.id],
         function (err, result) {
             if (err){
-                res.status(400).json({"error": res.message})
+                res.status(400).json({"error": err.message})
                 return;
             }
             res.json({
