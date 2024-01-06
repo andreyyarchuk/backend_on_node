@@ -33,11 +33,6 @@ class Article {s
         db.run('DELETE FROM articles WHERE id = ?', id, cb)
     }
 
-    // static update() {
-    //     const sql = `UPDATE articles
-    //     SET author = ?
-    //     `
-    // }
 }
 
 module.exports = db
