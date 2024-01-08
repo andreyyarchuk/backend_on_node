@@ -130,7 +130,33 @@ app.delete('/users/:id', (req, res, next) => {
 })
 
 
-
+app.put('/users/:id', (req, res, next) => {
+    var data = {
+        login: req.body.login,
+        password: req.body.password,
+        gender: req.body.gender,
+        age: req.body.age
+    }
+    db.run(
+            `UPDATE users set 
+            login = COALESCE(?,login), 
+            password = COALESCE(?,password), 
+            gender = COALESCE(?,gender),
+            age =  COALESCE(?,age)
+            WHERE id = ?`,
+            [data.login, data.password, data.gender, data.age, req.params.id],
+            function (err, result) {
+                if (err){
+                    res.status(400).json({"error": err.message})
+                    return;
+                }
+                res.json({
+                    message: "success",
+                    data: data,
+                    changes: this.changes
+                })
+            });
+})
 
 async function startApp() {
     try {
