@@ -1,5 +1,6 @@
 const express = require('express')
 const Article = require('./db.js').Article
+const User = require('./db.js').User
 const bodyParser =require('body-parser')
 
 const db = require('./db.js')
@@ -20,6 +21,7 @@ const MSG = {
 }
 
 
+// methods for ARTICLES
 app.post('/articles', (req, res, next) => {
     const result = req.body
     const url = req.url
@@ -48,25 +50,25 @@ app.put('/articles/:id', (req, res, next) => {
             content = COALESCE(?,content),
             picture =  COALESCE(?,picture)
             WHERE id = ?`,
-        [data.author, data.title, data.content, data.picture, req.params.id],
-        function (err, result) {
-            if (err){
-                res.status(400).json({"error": err.message})
-                return;
-            }
-            res.json({
-                message: "success",
-                data: data,
-                changes: this.changes
-            })
-    });
+            [data.author, data.title, data.content, data.picture, req.params.id],
+            function (err, result) {
+                if (err){
+                    res.status(400).json({"error": err.message})
+                    return;
+                }
+                res.json({
+                    message: "success",
+                    data: data,
+                    changes: this.changes
+                })
+            });
 })
 
 app.get('/articles', (req, res, next) => {
     Article.all((err, articles) => {
         if (err) return next(err)
         res.send(articles)
-    })
+})
 })
 
 
@@ -75,7 +77,7 @@ app.get('/articles/:id', (req, res, next) => {
     Article.find(id, (err, data) => {
         if (err) return next(err)
         res.send(data)
-    })
+})
 })
 
 
@@ -84,8 +86,49 @@ app.delete('/articles/:id', (req, res, next) => {
     Article.delete(id, (err) => {
         if (err) return next(err)
         res.send({message: 'Deleted'})
+})
+})
+
+
+// methods for ARTICLES
+
+app.get('/users', (req, res, next) => {
+    User.all((err, users) => {
+        if (err) return next(err)
+        res.send(users)
+})
+})
+
+app.get('/users/:id', (req, res, next) => {
+    const id = req.params.id
+    User.find(id, (err, data) => {
+        if (err) return next(err)
+        res.send(data)
     })
 })
+
+app.post('/users', (req, res, next) => {
+    const result = req.body
+    const url = req.url
+    console.log(result)
+    if (!req.body) return res.status(404).json(MSG.BODY404)
+    User.create(
+        {login: result.login, password: result.password, gender: result.gender, age: result.age},
+        (err, user) => {
+            if (err) return next(err)
+            res.send(MSG.OK)
+        }
+    )
+})
+
+app.delete('/users/:id', (req, res, next) => {
+    const id = req.params.id
+    User.delete(id, (err) => {
+        if (err) return next(err)
+        res.send({message: 'Deleted'})
+})
+})
+
 
 
 
