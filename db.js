@@ -35,5 +35,18 @@ class Article {s
 
 }
 
+db.serialize( ()=> {
+    const sql = `
+    CREATE TABLE IF NOT EXISTS users
+    (id integer primary key,
+        login TEXT,
+        password TEXT,
+        gender TEXT,
+        age INTEGER)
+    `
+    db.run(sql)
+})
+
+
 module.exports = db
 module.exports.Article = Article
