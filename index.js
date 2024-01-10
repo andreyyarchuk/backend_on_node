@@ -1,6 +1,6 @@
 const express = require('express')
 const Article = require('./db.js').Article
-const User = require('./db.js').User
+const Login = require('./db.js').Login
 const bodyParser =require('body-parser')
 
 const db = require('./db.js')
@@ -92,27 +92,27 @@ app.delete('/articles/:id', (req, res, next) => {
 
 // methods for ARTICLES
 
-app.get('/users', (req, res, next) => {
-    User.all((err, users) => {
+app.get('/login', (req, res, next) => {
+    Login.all((err, users) => {
         if (err) return next(err)
         res.send(users)
 })
 })
 
-app.get('/users/:id', (req, res, next) => {
+app.get('/login/:id', (req, res, next) => {
     const id = req.params.id
-    User.find(id, (err, data) => {
+    Login.find(id, (err, data) => {
         if (err) return next(err)
         res.send(data)
     })
 })
 
-app.post('/users', (req, res, next) => {
+app.post('/login', (req, res, next) => {
     const result = req.body
     const url = req.url
     console.log(result)
     if (!req.body) return res.status(404).json(MSG.BODY404)
-    User.create(
+    Login.create(
         {login: result.login, password: result.password, gender: result.gender, age: result.age},
         (err, user) => {
             if (err) return next(err)
@@ -121,16 +121,16 @@ app.post('/users', (req, res, next) => {
     )
 })
 
-app.delete('/users/:id', (req, res, next) => {
+app.delete('/login/:id', (req, res, next) => {
     const id = req.params.id
-    User.delete(id, (err) => {
+    Login.delete(id, (err) => {
         if (err) return next(err)
         res.send({message: 'Deleted'})
 })
 })
 
 
-app.put('/users/:id', (req, res, next) => {
+app.put('/login/:id', (req, res, next) => {
     var data = {
         login: req.body.login,
         password: req.body.password,
@@ -138,7 +138,7 @@ app.put('/users/:id', (req, res, next) => {
         age: req.body.age
     }
     db.run(
-            `UPDATE users set 
+            `UPDATE login set 
             login = COALESCE(?,login), 
             password = COALESCE(?,password), 
             gender = COALESCE(?,gender),

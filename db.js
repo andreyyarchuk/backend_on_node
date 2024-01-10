@@ -37,7 +37,7 @@ class Article {
 
 db.serialize( ()=> {
     const sql = `
-    CREATE TABLE IF NOT EXISTS users
+    CREATE TABLE IF NOT EXISTS login
     (id integer primary key,
         login TEXT,
         password TEXT,
@@ -48,23 +48,23 @@ db.serialize( ()=> {
 })
 
 
-class User {
+class Login {
     static all(cb) {
-        db.all('SELECT * FROM users', cb)
+        db.all('SELECT * FROM login', cb)
     }
 
     static find(id, cb) {
-        db.get('SELECT * FROM users WHERE id = ?', id, cb)
+        db.get('SELECT * FROM login WHERE id = ?', id, cb)
     }
 
     static create(data, cb) {
-        const sql = 'INSERT INTO users(login, password, gender, age) VALUES (?,?,?,?)'
+        const sql = 'INSERT INTO login(login, password, gender, age) VALUES (?,?,?,?)'
         db.run(sql, data.login, data.password, data.gender, data.age, cb)
     }
 
     static delete(id, cb) {
         if (!id) return cb(new Error('Please provide an id'))
-        db.run('DELETE FROM users WHERE id = ?', id, cb)
+        db.run('DELETE FROM login WHERE id = ?', id, cb)
     }
 
 }
@@ -72,4 +72,4 @@ class User {
 
 module.exports = db
 module.exports.Article = Article
-module.exports.User = User
+module.exports.Login = Login
