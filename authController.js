@@ -15,7 +15,7 @@ try {
     }
     async getUsers(req, res) {
         try {
-            
+            res.json('server is working')
         } catch (error) {
             
         }
