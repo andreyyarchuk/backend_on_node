@@ -5,11 +5,14 @@ const bodyParser =require('body-parser')
 
 const db = require('./db.js')
 
+const authRouter = require('./authRouter.js')
+
 const PORT = process.env.PORT || 5000
 
 const app = express()
 
 app.use(express.json())
+app.use('/auth', authRouter)
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded( {extended: true}))
