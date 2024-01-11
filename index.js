@@ -5,7 +5,7 @@ const bodyParser =require('body-parser')
 
 const db = require('./db.js')
 
-const port = 5000
+const PORT = process.env.PORT || 5000
 
 const app = express()
 
@@ -90,7 +90,7 @@ app.delete('/articles/:id', (req, res, next) => {
 })
 
 
-// methods for ARTICLES
+// methods for login
 
 app.get('/login', (req, res, next) => {
     Login.all((err, users) => {
@@ -109,7 +109,6 @@ app.get('/login/:id', (req, res, next) => {
 
 app.post('/login', (req, res, next) => {
     const result = req.body
-    const url = req.url
     console.log(result)
     if (!req.body) return res.status(404).json(MSG.BODY404)
     Login.create(
@@ -160,8 +159,8 @@ app.put('/login/:id', (req, res, next) => {
 
 async function startApp() {
     try {
-        app.listen(port, () => {
-            console.log('server loading http://localhost:5000')
+        app.listen(PORT, () => {
+            console.log(`server loading http://localhost:${5000}`)
         })
     } catch (error) {
         console.log(error)
