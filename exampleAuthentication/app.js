@@ -11,3 +11,13 @@ const DBSOURCE = 'usersdb.sqlite'
 const auth = require('./midldleware')
 
 const port = 3004
+
+let db = new sqlite3.Database(DBSOURCE, (err) => {
+    if (err) {
+        console.error(err.message)
+        throw err
+    }
+    else {
+        var salt = bcrypt.genSaltSync(10)
+    }
+})
