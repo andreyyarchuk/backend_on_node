@@ -1,6 +1,6 @@
 const express = require('express')
 const Article = require('./db.js').Article
-const Login = require('./db.js').Login
+// const Login = require('./db.js').Login
 const bodyParser =require('body-parser')
 
 const db = require('./db.js')
@@ -93,72 +93,72 @@ app.delete('/articles/:id', (req, res, next) => {
 })
 
 
-// methods for login
+// // methods for login
 
-app.get('/login', (req, res, next) => {
-    Login.all((err, users) => {
-        if (err) return next(err)
-        res.send(users)
-})
-})
+// app.get('/login', (req, res, next) => {
+//     Login.all((err, users) => {
+//         if (err) return next(err)
+//         res.send(users)
+// })
+// })
 
-app.get('/login/:id', (req, res, next) => {
-    const id = req.params.id
-    Login.find(id, (err, data) => {
-        if (err) return next(err)
-        res.send(data)
-    })
-})
+// app.get('/login/:id', (req, res, next) => {
+//     const id = req.params.id
+//     Login.find(id, (err, data) => {
+//         if (err) return next(err)
+//         res.send(data)
+//     })
+// })
 
-app.post('/login', (req, res, next) => {
-    const result = req.body
-    console.log(result)
-    if (!req.body) return res.status(404).json(MSG.BODY404)
-    Login.create(
-        {login: result.login, password: result.password, gender: result.gender, age: result.age},
-        (err, user) => {
-            if (err) return next(err)
-            res.send(MSG.OK)
-        }
-    )
-})
+// app.post('/login', (req, res, next) => {
+//     const result = req.body
+//     console.log(result)
+//     if (!req.body) return res.status(404).json(MSG.BODY404)
+//     Login.create(
+//         {login: result.login, password: result.password, gender: result.gender, age: result.age},
+//         (err, user) => {
+//             if (err) return next(err)
+//             res.send(MSG.OK)
+//         }
+//     )
+// })
 
-app.delete('/login/:id', (req, res, next) => {
-    const id = req.params.id
-    Login.delete(id, (err) => {
-        if (err) return next(err)
-        res.send({message: 'Deleted'})
-})
-})
+// app.delete('/login/:id', (req, res, next) => {
+//     const id = req.params.id
+//     Login.delete(id, (err) => {
+//         if (err) return next(err)
+//         res.send({message: 'Deleted'})
+// })
+// })
 
 
-app.put('/login/:id', (req, res, next) => {
-    var data = {
-        login: req.body.login,
-        password: req.body.password,
-        gender: req.body.gender,
-        age: req.body.age
-    }
-    db.run(
-            `UPDATE login set 
-            login = COALESCE(?,login), 
-            password = COALESCE(?,password), 
-            gender = COALESCE(?,gender),
-            age =  COALESCE(?,age)
-            WHERE id = ?`,
-            [data.login, data.password, data.gender, data.age, req.params.id],
-            function (err, result) {
-                if (err){
-                    res.status(400).json({"error": err.message})
-                    return;
-                }
-                res.json({
-                    message: "success",
-                    data: data,
-                    changes: this.changes
-                })
-            });
-})
+// app.put('/login/:id', (req, res, next) => {
+//     var data = {
+//         login: req.body.login,
+//         password: req.body.password,
+//         gender: req.body.gender,
+//         age: req.body.age
+//     }
+//     db.run(
+//             `UPDATE login set 
+//             login = COALESCE(?,login), 
+//             password = COALESCE(?,password), 
+//             gender = COALESCE(?,gender),
+//             age =  COALESCE(?,age)
+//             WHERE id = ?`,
+//             [data.login, data.password, data.gender, data.age, req.params.id],
+//             function (err, result) {
+//                 if (err){
+//                     res.status(400).json({"error": err.message})
+//                     return;
+//                 }
+//                 res.json({
+//                     message: "success",
+//                     data: data,
+//                     changes: this.changes
+//                 })
+//             });
+// })
 
 async function startApp() {
     try {
