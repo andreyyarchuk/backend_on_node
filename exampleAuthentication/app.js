@@ -11,6 +11,26 @@ const auth = require("./middleware");
 
 const port = 3004;
 
+
+// Recommended if you plan to use an external web application to call this API.
+app.use(
+    express.urlencoded(),
+    cors({
+        origin: 'http://localhost:3000'
+    })
+)
+
+const token = jwt.sign(
+    {user_id: user[0].Id,
+    username: user[0].username,
+    Email},
+    process.env.TOLEN_KEY,
+    {
+        expiresIn: "1h"
+    }
+)
+
+
 let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
       // Cannot open database
