@@ -19,16 +19,26 @@ app.use(
         origin: 'http://localhost:3000'
     })
 )
-
-const token = jwt.sign(
-    {user_id: user[0].Id,
-    username: user[0].username,
-    Email},
-    process.env.TOLEN_KEY,
-    {
-        expiresIn: "1h"
-    }
-)
+/**
+The following route will check if there is an Email and Password
+in the request. Then query the Users table
+in the Users database with the Email
+to get the password hash and compare it
+to the Password posted by the user.
+If successful, generate a JWT Token
+with the user ID and email in the payload
+which is base64 encoded.
+This gets sent back with a status code of 200.
+ */
+// const token = jwt.sign(
+//     {user_id: user[0].Id, // ReferenceError: user is not defined
+//     username: user[0].username,
+//     Email},
+//     process.env.TOLEN_KEY,
+//     {
+//         expiresIn: "1h"
+//     }
+// )
 
 
 let db = new sqlite3.Database(DBSOURCE, (err) => {
