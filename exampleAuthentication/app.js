@@ -1,23 +1,58 @@
-const express = require('express')
-require('dotenv').config() // Gives the application access to .env files. This is where we can put the keys for now.
-const sqlite3 = require('sqlite3').verbose();
-const cors = require('cors') // Cross Origin Resource Sharing is needed if you want to use the API with an external application.
-const jwt = require('jsonwebtoken') // Library to generate JWT tokens.
-const bcrypt = require('bcryptjs') // This library is used to hash the passwords. BCRYPT is based on the Blowfish cipher
+const express = require('express'); // Using the express framework
+const app = express(); 
+require("dotenv").config(); // Get environment variables from .env file(s)
+var sqlite3 = require('sqlite3').verbose()
+const cors = require('cors'); 
+var jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
-const app = express()
+const DBSOURCE = "usersdb.sqlite";
+const auth = require("./middleware");
 
-const DBSOURCE = 'usersdb.sqlite'
-const auth = require('./midldleware')
-
-const port = 3004
+const port = 3004;
 
 let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
-        console.error(err.message)
-        throw err
+      // Cannot open database
+      console.error(err.message)
+      throw err
+    } 
+    else {        
+        var salt = bcrypt.genSaltSync(10);
+        
+        db.run(`CREATE TABLE Users (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            Username text, 
+            Email text, 
+            Password text,             
+            Salt text,    
+            Token text,
+            DateLoggedIn DATE,
+            DateCreated DATE
+            )`,
+        (err) => {
+            if (err) {
+                // Table already created
+            } else{
+                // Table just created, creating some rows
+                var insert = 'INSERT INTO Users (Username, Email, Password, Salt, DateCreated) VALUES (?,?,?,?,?)'
+                db.run(insert, ["user1", "user1@example.com", bcrypt.hashSync("user1", salt), salt, Date('now')])
+                db.run(insert, ["user2", "user2@example.com", bcrypt.hashSync("user2", salt), salt, Date('now')])
+                db.run(insert, ["user3", "user3@example.com", bcrypt.hashSync("user3", salt), salt, Date('now')])
+                db.run(insert, ["user4", "user4@example.com", bcrypt.hashSync("user4", salt), salt, Date('now')])
+            }
+        });  
     }
-    else {
-        var salt = bcrypt.genSaltSync(10)
+});
+
+function startApp() {
+    try {
+        app.listen(port, () => {
+            console.log(`server loanding http://localhost:${port}`)
+        })
+    } catch (error) {
+       console.log(error) 
     }
-})
+}
+
+startApp()
