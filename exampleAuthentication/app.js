@@ -1,24 +1,15 @@
-const express = require('express'); // Using the express framework
-const app = express(); 
-require("dotenv").config(); // Get environment variables from .env file(s)
+const express = require('express');
+const app = express();
+require("dotenv").config();
+const port = 3004;
+var md5 = require('md5')
 var sqlite3 = require('sqlite3').verbose()
-const cors = require('cors'); 
+const cors = require('cors');
 var jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-
+var bcrypt = require('bcryptjs');
 const DBSOURCE = "usersdb.sqlite";
 const auth = require("./middleware");
-
-const port = 3004;
-
-
-// Recommended if you plan to use an external web application to call this API.
-app.use(
-    express.urlencoded(),
-    cors({
-        origin: 'http://localhost:3000'
-    })
-)
+const bodyParser =require('body-parser')
 
 
 let db = new sqlite3.Database(DBSOURCE, (err) => {
@@ -55,27 +46,20 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
     }
 });
 
-/**
-The following route will check if there is an Email and Password
-in the request. Then query the Users table
-in the Users database with the Email
-to get the password hash and compare it
-to the Password posted by the user.
-If successful, generate a JWT Token
-with the user ID and email in the payload
-which is base64 encoded.
-This gets sent back with a status code of 200.
- */
-const token = jwt.sign(
-    {user_id: user[0].Id, // ReferenceError: user is not defined
-    username: user[0].username,
-    Email},
-    process.env.TOLEN_KEY,
-    {
-        expiresIn: "1h"
-    }
-)
 
+module.exports = db
+
+app.use(
+    express.urlencoded(({ extended: true })),
+    cors({
+        origin: 'http://localhost:3000'
+    })
+);
+
+app.get('/', (req, res) => res.send('API Root'));
+
+
+// * R E G I S T E R   N E W   U S E R
 
 app.post("/api/register", async (req, res) => {
     var errors=[]
@@ -145,69 +129,62 @@ app.post("/api/register", async (req, res) => {
 })
 
 
-// Code for the Login Action
+// * L O G I N
+
 app.post("/api/login", async (req, res) => {
   
-    try {      
-      const { Email, Password } = req.body;
-          // Make sure there is an Email and Password in the request
-          if (!(Email && Password)) {
-              res.status(400).send("All input is required");
-          }
-              
-          let user = [];
-          
-          var sql = "SELECT * FROM Users WHERE Email = ?";
-          db.all(sql, Email, function(err, rows) {
-              if (err){
-                  res.status(400).json({"error": err.message})
-                  return;
-              }
-  
-              rows.forEach(function (row) {
-                  user.push(row);                
-              })
-              
-              var PHash = bcrypt.hashSync(Password, user[0].Salt);
-         
-              if(PHash === user[0].Password) {
-                  // * CREATE JWT TOKEN
-                  const token = jwt.sign(
-                      { user_id: user[0].Id, username: user[0].Username, Email },
-                        process.env.TOKEN_KEY,
-                      {
-                        expiresIn: "1h", // 60s = 60 seconds - (60m = 60 minutes, 2h = 2 hours, 2d = 2 days)
-                      }  
-                  );
-  
-                  user[0].Token = token;
-  
-              } else {
-                  return res.status(400).send("No Match");          
-              }
-  
-             return res.status(200).send(user);                
-          });	
-      
-      } catch (err) {
-        console.log(err);
-      }    
-  });
+  try {      
+    const { Email, Password } = req.body;
+        // Make sure there is an Email and Password in the request
+        if (!(Email && Password)) {
+            res.status(400).send("All input is required");
+        }
+            
+        let user = [];
+        
+        var sql = "SELECT * FROM Users WHERE Email = ?";
+        db.all(sql, Email, function(err, rows) {
+            if (err){
+                res.status(400).json({"error": err.message})
+                return;
+            }
 
+            rows.forEach(function (row) {
+                user.push(row);                
+            })
+            
+            var PHash = bcrypt.hashSync(Password, user[0].Salt);
+       
+            if(PHash === user[0].Password) {
+                // * CREATE JWT TOKEN
+                const token = jwt.sign(
+                    { user_id: user[0].Id, username: user[0].Username, Email },
+                      process.env.TOKEN_KEY,
+                    {
+                      expiresIn: "1h", // 60s = 60 seconds - (60m = 60 minutes, 2h = 2 hours, 2d = 2 days)
+                    }  
+                );
+
+                user[0].Token = token;
+
+            } else {
+                return res.status(400).send("No Match");          
+            }
+
+           return res.status(200).send(user);                
+        });	
+    
+    } catch (err) {
+      console.log(err);
+    }    
+});
+
+  
 // * T E S T  
 
 app.post("/api/test", auth, (req, res) => {
     res.status(200).send("Token Works - Yay!");
 });
 
-function startApp() {
-    try {
-        app.listen(port, () => {
-            console.log(`server loanding http://localhost:${port}`)
-        })
-    } catch (error) {
-       console.log(error) 
-    }
-}
 
-startApp()
+app.listen(port, () => console.log(`API listening on port ${port}!`));
