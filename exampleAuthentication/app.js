@@ -19,26 +19,6 @@ app.use(
         origin: 'http://localhost:3000'
     })
 )
-/**
-The following route will check if there is an Email and Password
-in the request. Then query the Users table
-in the Users database with the Email
-to get the password hash and compare it
-to the Password posted by the user.
-If successful, generate a JWT Token
-with the user ID and email in the payload
-which is base64 encoded.
-This gets sent back with a status code of 200.
- */
-// const token = jwt.sign(
-//     {user_id: user[0].Id, // ReferenceError: user is not defined
-//     username: user[0].username,
-//     Email},
-//     process.env.TOLEN_KEY,
-//     {
-//         expiresIn: "1h"
-//     }
-// )
 
 
 let db = new sqlite3.Database(DBSOURCE, (err) => {
@@ -74,6 +54,76 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         });  
     }
 });
+
+/**
+The following route will check if there is an Email and Password
+in the request. Then query the Users table
+in the Users database with the Email
+to get the password hash and compare it
+to the Password posted by the user.
+If successful, generate a JWT Token
+with the user ID and email in the payload
+which is base64 encoded.
+This gets sent back with a status code of 200.
+ */
+const token = jwt.sign(
+    {user_id: user[0].Id, // ReferenceError: user is not defined
+    username: user[0].username,
+    Email},
+    process.env.TOLEN_KEY,
+    {
+        expiresIn: "1h"
+    }
+)
+
+// Code for the Login Action
+app.post("/Users", async (req, res) => {
+    try {
+        const {Email, Password} = req.body
+        // Make sure there is an Email and Password in the request 
+        if (!(Email && Password)) {
+            res.status(400).send("All input is required")
+        }
+
+        let user = []
+
+        var sql = 'SELECT * FROM User WHERE Email = ?'
+        db.all(sql, Email, function(err, rows) {
+            if (err) {
+                res.status(400).json({"error": err.message})
+                return
+            }
+
+        rows.forEach(function (row) {
+            user.push(row)
+        })
+
+        var PHush = bcrypt.hash.hashSync(Password)
+
+        if (PHush === user[0].Password) {
+            // * CREATE JWT TOKEN
+
+            const token = jwt.sign(
+                {user_id: user[0].Id, username: user[0].Username, Email},
+                    process.env.TOLEN_KEY,
+                    {
+                        expiresIn: "1h", // 60s = 60 seconds - (60m = 60 minutes, 2h = 2 hours, 2d = 2 days)
+                    }
+            )
+
+            user[0].Token = token
+        
+        } else {
+            return res.status(400).send('No Match')
+        }
+
+    return res.status(200).send(user)
+        })
+
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 function startApp() {
     try {
