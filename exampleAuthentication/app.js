@@ -9,8 +9,10 @@ var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 const DBSOURCE = "usersdb.sqlite";
 const auth = require("./middleware");
-const bodyParser =require('body-parser')
 
+var bodyParser = require('body-parser')
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
 let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
@@ -64,6 +66,7 @@ app.get('/', (req, res) => res.send('API Root'));
 app.post("/api/register", async (req, res) => {
     var errors=[]
     try {
+        console.log(req.body)
         const { Username, Email, Password } = req.body;
 
         if (!Username){
@@ -183,6 +186,7 @@ app.post("/api/login", async (req, res) => {
 // * T E S T  
 
 app.post("/api/test", auth, (req, res) => {
+    console.log(req.user)
     res.status(200).send("Token Works - Yay!");
 });
 
