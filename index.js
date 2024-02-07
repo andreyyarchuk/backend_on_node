@@ -95,7 +95,13 @@ app.delete('/articles/:id', (req, res, next) => {
 })
 })
 
-// code for authorization
+app.use(
+    express.urlencoded(({ extended: true })),
+    cors({
+        origin: 'http://localhost:3000'
+    })
+);
+
 
 async function startApp() {
     try {
