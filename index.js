@@ -95,6 +95,8 @@ app.delete('/articles/:id', (req, res, next) => {
 })
 })
 
+// code for authorization
+
 async function startApp() {
     try {
         app.listen(PORT, () => {
