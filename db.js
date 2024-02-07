@@ -67,7 +67,13 @@ class Article {
 
 }
 
-
+class User {
+    static all(cb) {
+        db.all('SELECT * FROM Users', cb)
+    }
+}
 
 module.exports = db
+module.exports = dbName
 module.exports.Article = Article
+module.exports.User = User
