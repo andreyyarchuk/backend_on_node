@@ -151,13 +151,13 @@ app.post("/api/login", async (req, res) => {
                 res.status(400).json({"error": err.message})
                 return;
             }
-
+             
             rows.forEach(function (row) {
-                user.push(row);                
+                user.push(row);
             })
             
             var PHash = bcrypt.hashSync(Password, user[0].Salt);
-       
+            
             if(PHash === user[0].Password) {
                 // * CREATE JWT TOKEN
                 const token = jwt.sign(
@@ -186,7 +186,7 @@ app.post("/api/login", async (req, res) => {
 // * T E S T  
 
 app.post("/api/test", auth, (req, res) => {
-    console.log(req.user)
+    // console.log(req.user)
     res.status(200).send("Token Works - Yay!");
 });
 
